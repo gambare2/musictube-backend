@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "music_backend",
   "version": "1.0.0",
   "description": "This is the backend for the Pritube music. ",
@@ -20,4 +21,24 @@
     "mongoose": "^8.17.0",
     "nodemon": "^3.1.10"
   }
+=======
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "nodemon -r dotenv/config --experimental-json-modules app.js"
+  },
+  "keywords": [],
+  "author": "gambare2",
+  "license": "ISC",
+  "description": "Music app to listen your music.",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {}
+>>>>>>> 1615cc166252c26262e2e24b18bae4b32c33dd3b
 }
