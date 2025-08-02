@@ -14,7 +14,6 @@ console.log('[DEBUG] process.env.FRONTEND_URL:', process.env.FRONTEND_URL);
 app.use(cors(
   {
     origin: process.env.FRONTEND_URL,
-    // origin: "http://localhost:5173",
     credentials: true,
   }
 ))
