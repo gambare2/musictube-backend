@@ -6,12 +6,15 @@ require('./db/index');
 
 const app = express();
 
-app.use(cors({
-  origin: "https://music-tube.vercel.app/",
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 
 app.use(express.json());
