@@ -1,15 +1,17 @@
 {
   "name": "music_backend",
   "version": "1.0.0",
-  "description": "This is the backend for the Pritube music. ",
+  "description": "This is the backend for the Pritube music.",
   "license": "ISC",
   "author": "gambare2",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build": "echo 'no build step needed'"
   },
+  
   "dependencies": {
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
@@ -22,3 +24,4 @@
     "nodemon": "^3.1.10"
   }
 }
+
