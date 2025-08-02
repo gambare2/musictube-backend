@@ -15,6 +15,13 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true,
+    },
+    profile: {
+        type: String,
+        required: true,
+    },
+    DOB: {
+        type: Date,
     }
 })
 
