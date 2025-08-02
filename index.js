@@ -14,7 +14,12 @@ app.get('/', (req, res)=>{
     res.send('Backend for pritube music');
 });
 
-app.use(cors());
+app.use(cors(
+    {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    }
+));
 app.use(bodyparser.json());
 
 app.use('/auth', AuthRouter)
