@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, profile, username, DOB } = req.body;
 
     const user = await UserModal.findOne({ email });
     if (user) {
@@ -15,7 +15,7 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new UserModal({ name, email, password: hashedPassword });
+    const newUser = new UserModal({ name, email, password: hashedPassword, profile, username, DOB });
 
     await newUser.save();
 

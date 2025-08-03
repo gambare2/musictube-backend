@@ -8,6 +8,7 @@ const registerValidation = (req, res, next) => {
         name: Joi.string().min(6).required(),
         email: Joi.string().required().email(),
         password: Joi.string().min(6).required(),
+        profile: Joi.string().required()
     });
     const { error } = schema.validate(req.body);
     if (error) {
