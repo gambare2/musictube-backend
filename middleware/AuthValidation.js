@@ -16,6 +16,7 @@ const registerValidation = (req, res, next) => {
             message: "Bad request", error
         })
     }
+    req.body = value;
     next()
 };
 const loginValidation = (req, res, next) => {
