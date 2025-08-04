@@ -8,9 +8,9 @@ const registerValidation = (req, res, next) => {
         name: Joi.string().min(6).required(),
         email: Joi.string().required().email(),
         password: Joi.string().min(6).required(),
-        profile: Joi.string().optional().default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
+        profile: Joi.string().uri().default("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"),
     });
-    const { error } = schema.validate(req.body);
+    const { error, value } = schema.validate(req.body);
     if (error) {
         return res.status(400).json({
             message: "Bad request", error
