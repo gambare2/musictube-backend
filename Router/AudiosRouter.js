@@ -2,9 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get('/trending', async (req, res) => {
+router.get('/artists', async (req, res) => {
   try {
-    const url = `${process.env.BASE_URL}/users/trending?limit=20`;
+    const url = `${process.env.BASE_URL}/artists/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json`;
     console.log('[DEBUG] Fetching:', url);
 
     const response = await fetch(url); 
@@ -23,7 +23,7 @@ router.get('/trending', async (req, res) => {
 
   router.get("/tracks/trending", async (req, res) => {
     try {
-        const r = await fetch(`${process.env.BASE_URL}/tracks/trending`);
+        const r = await fetch(`${process.env.BASE_URL}/tracks/trending/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json`);
         const data = await r.json();
         res.json(data);
     } catch (err) {
@@ -33,24 +33,28 @@ router.get('/trending', async (req, res) => {
 
   router.get('/search', async (req, res) => {
     try {
-        const q = req.query.q || '';
-        const type = req.query.type || 'artist';
-
-        let endpoint = '';
-
-        if(type === 'track'){
-            endpoint = `${process.env.BASE_URL}/tracks/search?query=${encodeURIComponent(q)}`;
-        }else{
-            endpoint = `${process.env.BASE_URL}/users/search?query=${encodeURIComponent(q)}`;
-        }
-
-        const r = await fetch(endpoint);
-        const data = await r.json();
-        res.json(data);
+      const q = req.query.q || '';
+      const type = req.query.type || 'artist';
+  
+  
+      let endpoint = '';
+  
+      if (type === 'track') {
+        endpoint = `${process.env.BASE_URL}/tracks/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json&namesearch=${encodeURIComponent(q)}&limit=50`;
+      } else {
+        // default to artist search
+        endpoint = `${process.env.BASE_URL}/artists/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json&namesearch=${encodeURIComponent(q)}&limit=50`;
+      }
+  
+      console.log('[DEBUG] Jamendo Search URL:', endpoint);
+  
+      const r = await fetch(endpoint);
+      const data = await r.json();
+      res.json(data);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Search failed' });
+      console.error('[ERROR] Search failed:', err.message);
+      res.status(500).json({ error: 'Search failed' });
     }
-  })    
+  });  
 
   module.exports = router;
