@@ -2,8 +2,11 @@ const bcrypt = require('bcrypt');
 const UserModal = require('../db/User');
 const jwt = require('jsonwebtoken');
 
+
+
 const register = async (req, res) => {
   try {
+    console.log("[Register] Received:", req.body);
     const { name, email, password, profile, username, DOB } = req.body;
 
     const user = await UserModal.findOne({ email });
