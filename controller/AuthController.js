@@ -4,13 +4,14 @@ const jwt = require('jsonwebtoken');
 
 const register = async (req, res) => {
   try {
-    console.log("[Register] Received:", req.body);
+    console.log("[Register] req.body:", req.body);
+    console.log("[Register] req.file:", req.file?.originalname);
 
     const { name, email, password, username, DOB } = req.body;
-    const profileFile = req.file;
+    const profileBuffer = req.file?.buffer;
 
-    const existingUser = await UserModal.findOne({ email });
-    if (existingUser) {
+    const userExists = await UserModal.findOne({ email });
+    if (userExists) {
       return res.status(409).json({
         message: "User already exists, you can login",
         success: false,
@@ -25,7 +26,9 @@ const register = async (req, res) => {
       password: hashedPassword,
       username,
       DOB,
-      profile: profileFile ? profileFile.buffer.toString('base64') : "",
+      profile: profileBuffer
+        ? `data:${req.file.mimetype};base64,${profileBuffer.toString('base64')}`
+        : undefined,
     });
 
     await newUser.save();
@@ -42,6 +45,7 @@ const register = async (req, res) => {
     });
   }
 };
+
 
 
 const login = async (req, res) => {
