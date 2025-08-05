@@ -21,9 +21,9 @@ router.get('/artists', async (req, res) => {
   }
 });
 
-  router.get("/tracks/trending", async (req, res) => {
+  router.get("/tracks", async (req, res) => {
     try {
-        const r = await fetch(`${process.env.BASE_URL}/tracks/trending/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json`);
+        const r = await fetch(`${process.env.BASE_URL}/tracks/?client_id=${process.env.JAMENDO_CLIENT_ID}&format=json`);
         const data = await r.json();
         res.json(data);
     } catch (err) {
