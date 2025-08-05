@@ -2,15 +2,15 @@ const bcrypt = require('bcrypt');
 const UserModal = require('../db/User');
 const jwt = require('jsonwebtoken');
 
-
-
 const register = async (req, res) => {
   try {
     console.log("[Register] Received:", req.body);
-    const { name, email, password, profile, username, DOB } = req.body;
 
-    const user = await UserModal.findOne({ email });
-    if (user) {
+    const { name, email, password, username, DOB } = req.body;
+    const profileFile = req.file;
+
+    const existingUser = await UserModal.findOne({ email });
+    if (existingUser) {
       return res.status(409).json({
         message: "User already exists, you can login",
         success: false,
@@ -18,7 +18,15 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new UserModal({ name, email, password: hashedPassword, profile, username, DOB });
+
+    const newUser = new UserModal({
+      name,
+      email,
+      password: hashedPassword,
+      username,
+      DOB,
+      profile: profileFile ? profileFile.buffer.toString('base64') : "",
+    });
 
     await newUser.save();
 
@@ -34,6 +42,7 @@ const register = async (req, res) => {
     });
   }
 };
+
 
 const login = async (req, res) => {
   try {
