@@ -9,7 +9,11 @@ const register = async (req, res) => {
     // Check if user already exists
     const existingUser = await UserModal.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(409).json({
+        message: "User already exists. Please login.",
+        success: false,
+        redirectToLogin: true
+      });
     }
 
     // Hash the password ✅
@@ -20,17 +24,21 @@ const register = async (req, res) => {
       name,
       email,
       username,
-      password: hashedPassword, 
+      password: hashedPassword,
     });
 
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully", success: true });
+    res.status(201).json({
+      message: "User registered successfully",
+      success: true
+    });
   } catch (error) {
     console.error("[REGISTER ERROR]", error);
     res.status(500).json({ message: "Internal server error", success: false });
   }
 };
+
 
 
 
