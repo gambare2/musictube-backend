@@ -3,6 +3,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const AuthRouter = require('./Router/AuthRouter');
 const AudiosRouter = require('./Router/AudiosRouter');
+const { getProfile } = require("./controller/AuthController");
+const verifyJWT = require("./middleware/verifyjwt");
+
+const router = express.Router();
 
 dotenv.config();
 require('./db/index');
@@ -28,6 +32,8 @@ app.use(express.json({
 app.get('/', (req, res) => {
   res.send('Backend for pritube music');
 });
+
+router.get("/profile", verifyJWT, getProfile);
 
 
 app.use('/auth', AuthRouter);

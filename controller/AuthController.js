@@ -96,7 +96,22 @@ const login = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };  
+
+const getProfile = async (req, res) => {
+  try {
+    const user = await UserModal.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error("[PROFILE ERROR]", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   register,
-  login
+  login,
+  getProfile
 };

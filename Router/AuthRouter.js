@@ -1,15 +1,15 @@
 const express = require('express');
-// const multer = require('multer');
 const { register, login } = require('../controller/AuthController');
 const { loginValidation, registerValidation } = require('../middleware/AuthValidation');
+const upload = require('../middleware/upload'); 
+
 const router = express.Router();
-const upload = require('../middleware/upload');
 
-const storage = multer.memoryStorage(); 
-const upload = multer({ storage });
-
+// Register with profile image upload
 router.post('/register', upload.single('profile'), registerValidation, register);
 
+// Login
 router.post('/login', loginValidation, login);
 
 module.exports = router;
+
