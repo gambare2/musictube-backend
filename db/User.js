@@ -16,18 +16,35 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
-    profile: {
-        type: String,
-        default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
-    },
     DOB: {
         type: Date,
     },
     username: {
         type: String,
-        // required: true,
         unique: true,
     },
+    likedSongs: {
+        type: Array,
+        default: []
+    },
+    savedSongs: {
+        type: Array,
+        default: []
+    },
+    followedArtists: {
+        type: Array,
+        default: []
+    },
+    recentlyPlayed: [{
+        song: { type: Object },
+        playedAt: { type: Date, default: Date.now }
+    }],
+    favoriteGenres: {
+        type: [String],
+        default: []
+    },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 })
 
 const UserModal = mongoose.model('User', userSchema);
