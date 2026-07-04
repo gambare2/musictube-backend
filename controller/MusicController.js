@@ -5,6 +5,9 @@ const TrackModal = require('../db/Track');
 const LikedSongModal = require('../db/LikedSong');
 const ListeningHistoryModal = require('../db/ListeningHistory');
 const providers = require('../services/providers');
+const youtubedl = require("youtube-dl-exec");
+const https = require("https");
+
 
 // Cache Expiration Time: 24 Hours in milliseconds
 const CACHE_EXPIRATION = 24 * 60 * 60 * 1000;
@@ -137,7 +140,7 @@ const getGenreByName = async (req, res) => {
         const artists = await providers.getTagTopArtists(name, 10);
 
         // Map tracks to include streaming audio link pointing to our resolver
-        const baseUrl = process.env.BASE_URL_LOCAL || `http://localhost:${process.env.PORT || 5000}`;
+        const baseUrl = process.env.BASE_URL_LOCAL;
         const tracks = tracksRaw.map(t => ({
             id: t.id, // ID is the composite string "Artist - Title"
             name: t.name,
@@ -222,7 +225,7 @@ const getRecommendations = async (req, res) => {
         }
 
         // Ensure every track has a correct audio proxy url
-        const baseUrl = process.env.BASE_URL_LOCAL || `http://localhost:${process.env.PORT || 5000}`;
+        const baseUrl = process.env.BASE_URL_LOCAL;
         const formattedTracks = tracks.map(t => ({
             id: t.id,
             name: t.name,
@@ -509,36 +512,69 @@ const updatePreferences = async (req, res) => {
 // 14. Audio Streaming Proxy Resolver
 const getStream = async (req, res) => {
     let { youtubeId } = req.params;
-    res.header('Content-Type', 'audio/mpeg');
+
     try {
-        const ytdl = require('@distube/ytdl-core');
-        
-        // Resolve text queries (like Last.fm names) to YouTube IDs
-        if (youtubeId.includes(' ') || youtubeId.length !== 11) {
-            console.log(`[Stream Resolver] Resolving query "${youtubeId}" to video ID...`);
-            const searchResults = await providers.searchSongs(youtubeId, 1);
-            if (searchResults.length > 0) {
-                youtubeId = searchResults[0].id;
-                console.log(`[Stream Resolver] Query resolved to: ${youtubeId}`);
-            } else {
-                return res.status(404).json({ error: 'Audio track not found' });
+
+        if (youtubeId.includes(" ") || youtubeId.length !== 11) {
+
+            console.log(`[Resolver] Searching ${youtubeId}`);
+
+            const songs = await providers.searchSongs(youtubeId, 1);
+
+            if (!songs.length) {
+                return res.status(404).json({
+                    error: "Song not found"
+                });
             }
+
+            youtubeId = songs[0].id;
         }
 
-        // Pipe audio stream to response
-        ytdl(`https://www.youtube.com/watch?v=${youtubeId}`, {
-            filter: 'audioonly',
-            quality: 'highestaudio',
-            highWaterMark: 1 << 25 // 32MB buffer size for smooth streaming
-        }).on('error', (err) => {
-            console.error('[ytdl-core stream error]:', err.message);
-        }).pipe(res);
+        const url = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+        console.log("Getting direct audio URL...");
+
+        const audioUrl = await youtubedl(url, {
+            getUrl: true,
+            format: "bestaudio"
+        });
+
+        console.log(audioUrl);
+
+        https.get(audioUrl.trim(), (stream) => {
+
+            res.setHeader(
+                "Content-Type",
+                stream.headers["content-type"] || "audio/mpeg"
+            );
+
+            res.setHeader(
+                "Content-Length",
+                stream.headers["content-length"] || ""
+            );
+
+            stream.pipe(res);
+
+        }).on("error", err => {
+
+            console.error(err);
+
+            res.status(500).json({
+                error: "Streaming failed"
+            });
+
+        });
+
     } catch (err) {
-        console.error('[Streaming Proxy Error]:', err.message);
-        res.status(500).json({ error: 'Stream failed' });
+
+        console.error(err);
+
+        res.status(500).json({
+            error: err.message
+        });
+
     }
 };
-
 module.exports = {
     getArtists,
     getTrendingArtists,

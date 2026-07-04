@@ -18,7 +18,7 @@ const searchSongs = async (query, limit = 20) => {
         const response = await api.search(query, 'song');
         
         const list = response.content || [];
-        const baseUrl = process.env.BASE_URL_LOCAL;
+        const baseUrl = process.env.BASE_URL_LOCALs;
         
         return list.slice(0, limit).map(item => {
             const artistName = Array.isArray(item.artists) ? item.artists.map(a => a.name).join(', ') : (item.author || 'Unknown Artist');
